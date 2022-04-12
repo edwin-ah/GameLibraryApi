@@ -21,7 +21,7 @@ namespace GameLibraryApi.Controllers
             _context = context;
         }
 
-        //GET: api/ListGames
+        //GET: api/Games/ListGames
         [HttpGet]
         [Route("ListGames")]
         public async Task<ActionResult<IEnumerable<Game>>> ListGames(string name = null, string company = null)
@@ -41,16 +41,33 @@ namespace GameLibraryApi.Controllers
             return gameList.ToArray();
         }
 
-        // GET: api/Games
+        // GET: api/Games/AllGames
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Game>>> GetGames()
+        [Route("AllGames/{page}")]
+        public async Task<ActionResult<GameListPagination>> GetGames(int page)
         {
-            return await _context.Games.ToListAsync();
+            var allGames = await _context.Games.ToListAsync();
+            double pageResults = 4d;
+            double pageCount = Math.Ceiling(allGames.Count() / pageResults);
+
+            var games = allGames
+                .Skip((page - 1) * (int)pageResults)
+                .Take((int)pageResults)
+                .ToArray();
+
+            var response = new GameListPagination()
+            {
+                Games = games,
+                CurrentPage = page,
+                Pages = (int)pageCount
+            };
+
+            return response;
         }
 
         // GET: api/Games/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Game>> GetGame(string id)
+        public async Task<ActionResult<Game>> LoadGame(string id)
         {
             var game = await _context.Games.FindAsync(id);
 
