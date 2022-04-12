@@ -24,16 +24,16 @@ namespace GameLibraryApi.Controllers
         //GET: api/ListGames
         [HttpGet]
         [Route("ListGames")]
-        public async Task<ActionResult<IEnumerable<Game>>> ListGames(string name = "", string company = "")
+        public async Task<ActionResult<IEnumerable<Game>>> ListGames(string name = null, string company = null)
         {
             var gameList = await _context.Games.ToListAsync();
 
-            if (name.Length > 0)
+            if (name != null)
             {
                 gameList = gameList.Where(g => g.Name.ToLower().Contains(name.ToLower())).ToList();
             }
 
-            if (company.Length > 0)
+            if (company != null)
             {
                 gameList = gameList.Where(g => g.Company.ToLower().Contains(company.ToLower())).ToList();
             }
@@ -102,7 +102,7 @@ namespace GameLibraryApi.Controllers
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Todo: log ex.Message
 
