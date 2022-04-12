@@ -94,18 +94,18 @@ namespace GameLibraryApi.Controllers
 
         // POST: api/Games
         [HttpPost]
-        public async Task<ActionResult<bool>> PostGame(Game game)
+        public async Task<ActionResult<bool>> PostGame(string identifier, Game game)
         {
+            game.Identifier = identifier;
             _context.Games.Add(game);
             try
             {
                 await _context.SaveChangesAsync();
-                return true;
+                return StatusCode(StatusCodes.Status201Created, true);
             }
             catch (Exception)
             {
                 // Todo: log ex.Message
-
                 return StatusCode(StatusCodes.Status500InternalServerError, false);
             }
         }
