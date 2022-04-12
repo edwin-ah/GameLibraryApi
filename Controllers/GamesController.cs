@@ -94,10 +94,10 @@ namespace GameLibraryApi.Controllers
 
         // POST: api/Games
         [HttpPost]
-        public async Task<ActionResult<bool>> PostGame(string identifier, Game game)
+        public async Task<ActionResult<bool>> PostGame(AddGame newGame)
         {
-            game.Identifier = identifier;
-            _context.Games.Add(game);
+            newGame.Game.Identifier = newGame.Identifier;
+            _context.Games.Add(newGame.Game);
             try
             {
                 await _context.SaveChangesAsync();
