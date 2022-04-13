@@ -48,19 +48,7 @@ namespace GameLibraryApi.Controllers
         {
             var allGames = await _context.Games.ToListAsync();
             double pageResults = 4d;
-            double pageCount = Math.Ceiling(allGames.Count() / pageResults);
-
-            var games = allGames
-                .Skip((page - 1) * (int)pageResults)
-                .Take((int)pageResults)
-                .ToArray();
-
-            var response = new GameListPagination()
-            {
-                Games = games,
-                CurrentPage = page,
-                Pages = (int)pageCount
-            };
+            GameListPagination response = GetGameListPagination(page, allGames, pageResults);
 
             return response;
         }
@@ -77,36 +65,6 @@ namespace GameLibraryApi.Controllers
             }
 
             return game;
-        }
-
-        // PUT: api/Games/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutGame(string id, Game game)
-        {
-            if (id != game.Identifier)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(game).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GameExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
         }
 
         // POST: api/Games
@@ -143,9 +101,22 @@ namespace GameLibraryApi.Controllers
             return NoContent();
         }
 
-        private bool GameExists(string id)
+        private GameListPagination GetGameListPagination(int page, List<Game> allGames, double pageResults)
         {
-            return _context.Games.Any(e => e.Identifier == id);
+            double pageCount = Math.Ceiling(allGames.Count / pageResults);
+
+            var games = allGames
+                .Skip((page - 1) * (int)pageResults)
+                .Take((int)pageResults)
+                .ToArray();
+
+            var response = new GameListPagination()
+            {
+                Games = games,
+                CurrentPage = page,
+                Pages = (int)pageCount
+            };
+            return response;
         }
     }
 }
